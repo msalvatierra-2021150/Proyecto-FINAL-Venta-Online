@@ -31,7 +31,10 @@ const ProductoSchema = Schema({
     },
     descripcion: { type: String },
     disponible: { type: Boolean, default: true },
-
+    contadorDeVendidos: {
+        type: Number,
+        default: 0
+    }
 });
 
 

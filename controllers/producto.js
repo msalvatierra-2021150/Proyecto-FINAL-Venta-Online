@@ -21,6 +21,37 @@ const getProductos = async (req = request, res = response) => {
 
 }
 
+const getProductosMasVendidos = async (req = request, res = response) => {
+      //condiciones del get
+      const query = { estado: true };
+
+      const listaProductos = await Promise.all([
+          Producto.find(query, ['nombre','precio', 'contadorDeVendidos'])
+          .sort({contadorDeVendidos: -1 })
+          .limit(2)
+
+      ]);
+      
+      res.json({
+          msg: 'Lista de productos mas vendidos',
+          listaProductos
+      });
+ }
+
+ const getProductosAgotados = async (req = request, res = response) => {
+    //condiciones del get
+    const query = { estado: true , stock: 0};
+
+    const listaProductos = await Promise.all([
+        Producto.find(query, ['nombre','precio', 'contadorDeVendidos'])
+
+    ]);
+    
+    res.json({
+        msg: 'Lista de productos mas vendidos',
+        listaProductos
+    });
+}
 
 const getProductoPorId = async (req = request, res = response) => {
 
@@ -51,7 +82,7 @@ const postProducto = async (req = request, res = response) => {
     const data = {
         ...body,
         nombre: body.nombre.toUpperCase(),
-        usuario: req.usuario._id
+        usuario: req.usuario.id
     }
 
     const producto = await Producto( data );
@@ -108,5 +139,7 @@ module.exports = {
    putProducto,
    deleteProducto,
    getProductos,
-   getProductoPorId
+   getProductoPorId,
+   getProductosMasVendidos,
+   getProductosAgotados
 }

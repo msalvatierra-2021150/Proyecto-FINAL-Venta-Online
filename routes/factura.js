@@ -2,8 +2,8 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 //Controllers
-const { getCategorias, getCategoriaPorID, postCategoria, putCategoria, deleteCategoria } = require('../controllers/categoria');
-const { existeCategoriaPorId } = require('../helpers/db-validators');
+const { getFacturas, getFacturaPorId, postFactura, putFactura, deleteFactura} = require('../controllers/factura');
+const { existeFacturaPorId } = require('../helpers/db-validators');
 
 // Middlewares
 const { validarCampos } = require('../middlewares/validar-campos');
@@ -16,41 +16,42 @@ const router = Router();
 //Manejo de rutas
 
 // Obtener todas las categorias - publico
-router.get('/mostrar', getCategorias );
+router.get('/mostrar',[
+    validarJWT,
+    validarCampos
+], getFacturas );
+
 
 // Obtener una categoria por id - publico
-router.get('/:id', [
+router.get('/mostrar/:id', [
     check('id', 'No es un id de Mongo Válido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
+    check('id').custom( existeFacturaPorId ),
     validarCampos
-], getCategoriaPorID );
+], getFacturaPorId );
 
 // Crear categoria - privada - cualquier persona con un token válido
 router.post('/agregar', [
     validarJWT,
-    esAdminRole,
-    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('NITReceptor', 'El NIT del Receptor es Obligatorio').not().isEmpty(),
     validarCampos
-] ,postCategoria);
+] ,postFactura);
 
 // Actuaizar categoria - privada - cualquier persona con un token válido
 router.put('/editar/:id', [
     validarJWT,
-    esAdminRole,
     check('id', 'No es un id de Mongo Válido').isMongoId(),
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-    check('id').custom( existeCategoriaPorId ),
+    check('id').custom( existeFacturaPorId ),
     validarCampos
-] ,putCategoria);
+] ,putFactura);
 
 //Borrar una categoria - privado - Solo el admin puede eliminar una categoria (estado: false)
 router.delete('/eliminar/:id', [
     validarJWT,
-    esAdminRole,
     check('id', 'No es un id de Mongo Válido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
+    check('id').custom( existeFacturaPorId ),
     validarCampos
-] ,deleteCategoria);
+] ,deleteFactura);
 
 
 

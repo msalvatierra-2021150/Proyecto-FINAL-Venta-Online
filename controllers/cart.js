@@ -16,32 +16,6 @@ const getCarrito = async (req = request, res = response) => {
   }
 };
 
-/*
-const postCarrito = async (req = request, res = response) => {
-    const productoId = req.params.id;
-    
-    //const { id } = req.params;
-    const productoAAnadir = await Producto.findById( productoId ).populate('nombre', 'categoria' );
-
-    //Anadirlo al token es como cache 
-    //req.usuario.cart.push(productoAAnadir);
-    
-    //Obtengo el Is del user en el token
-    const idUsuario  = req.usuario.id;
-
-    const data = {
-
-    }
-    //Anado el producto al carrito
-    const usuarioEditado = await Usuario.findByIdAndUpdate(idUsuario,  {$push: {data}});
-    //Editar al usuario por el id
-   
-    return res.json({
-        msg: 'Agregar productos al Carrito del User',
-        usuarioEditado
-    });
-}*/
-
 const postCarrito = async (req = request, res = response) => {
   const { itemId } = req.params;
 
@@ -59,6 +33,8 @@ const postCarrito = async (req = request, res = response) => {
 
     if (existeEnCarrito) {
       existeEnCarrito.quantity += 1;
+      existeEnCarrito.nombre = item.nombre;
+      existeEnCarrito.precio = item.precio;
     } else {
       cart.push({ itemId, quantity: 1 });
     }

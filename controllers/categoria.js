@@ -1,6 +1,7 @@
 const { request, response } = require('express');
+const categoria = require('../models/categoria');
 const Categoria = require('../models/categoria');
-
+const Producto = require('../models/producto');
 
 const getCategorias = async (req = request, res = response) => {
 
@@ -76,6 +77,27 @@ const putCategoria = async (req = request, res = response) => {
 const deleteCategoria = async (req = request, res = response) => {
 
     const { id } = req.params;
+    const categoriaPorDefecto = 'DEFECTO';
+
+        //Verificar si Por DEFECTO existe
+        const existeCategoria = await Categoria.findOne({nombre: categoriaPorDefecto});
+    
+        if ( !existeCategoria ) {
+            const categoria = new Categoria( {
+                nombre: 'DEFECTO',
+                usuario: req.usuario.id
+            });
+
+            //Guardar en DB
+            await categoria.save();
+        }
+
+        const query1 = { nombre:'DEFECTO' }
+        const idCategoriaDefecto = await Categoria.findOne(query1);
+
+
+    //Pasar la categoria que tenia por una DEFECTO
+    const producto  = await Producto.updateMany({categoria: id},{ categoria:  idCategoriaDefecto.id});
 
     //Editar o actualiar la cateogira: Estado FALSE
     const categoriaBorrada = await Categoria.findByIdAndUpdate(id, { estado: false }, { new: true });
@@ -83,9 +105,6 @@ const deleteCategoria = async (req = request, res = response) => {
     res.status(201).json(categoriaBorrada);
 
 }
-
-
-
 
 module.exports = {
     getCategorias,

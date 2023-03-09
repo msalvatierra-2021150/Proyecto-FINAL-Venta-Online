@@ -4,26 +4,21 @@ const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuario');
 
 const getUsuarios = async (req = request, res = response) => {
-
     //condiciones del get
-    const query = { estado: true };
+    const query = { estado: true , _id: req.usuario.id};
 
-    const listaUsuarios = await Promise.all([
-        Usuario.countDocuments(query),
-        Usuario.find(query)
-    ]);
-
-    res.json({
-        msg: 'get Api - Controlador Usuario',
-        listaUsuarios
-    });
-
+    const listaUsuarios = await Usuario.findById(query);
+        return res.json({
+            msg: 'get Api - Controlador Usuario',
+            listaUsuarios
+        });
 }
 
 const postUsuario = async (req = request, res = response) => {
 
     //Desestructuración
-    const { nombre, correo, password, rol } = req.body;
+    const { nombre, correo, password} = req.body;
+    rol = 'CLIENTE_ROLE';
     const usuarioGuardadoDB = new Usuario({ nombre, correo, password, rol });
 
     //Encriptar password
@@ -42,10 +37,9 @@ const postUsuario = async (req = request, res = response) => {
 
 
 const putUsuario = async (req = request, res = response) => {
-
     //Req.params sirve para traer parametros de las rutas
-    const { id } = req.params;
-    const { _id, img,  /* rol,*/  estado, google, ...resto } = req.body;
+    const { id } = req.usuario;
+    const { _id, img,  rol,  estado, google, ...resto } = req.body;
     //Los parametros img, rol, estado y google no se modifican, el resto de valores si (nombre, correo y password)
 
     //Si la password existe o viene en el req.body, la encripta
@@ -55,30 +49,25 @@ const putUsuario = async (req = request, res = response) => {
         resto.password = bcrypt.hashSync(resto.password, salt);
     }
 
-    //Editar al usuario por el id
-    const usuarioEditado = await Usuario.findByIdAndUpdate(id, resto);
-
-    res.json({
-        msg: 'PUT editar user',
-        usuarioEditado
-    });
-
+        //Editar al usuario por el id
+        const usuarioEditado = await Usuario.findByIdAndUpdate(id, resto);
+        return res.json({
+            msg: 'PUT editar user',
+            usuarioEditado
+        });
 }
 
 const deleteUsuario = async(req = request, res = response) => {
     //Req.params sirve para traer parametros de las rutas
-    const { id } = req.params;
+    const { id } = req.usuario;
 
-    //Eliminar fisicamente de la DB
-    //const usuarioEliminado = await Usuario.findByIdAndDelete( id);
+        //Eliminar cambiando el estado a false
+        const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
 
-    //Eliminar cambiando el estado a false
-     const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
-
-    res.json({
-        msg: 'DELETE eliminar user',
-        usuarioEliminado
-    });
+        return res.json({
+            msg: 'DELETE eliminar user',
+            usuarioEliminado
+        });
 }
 
 module.exports = {

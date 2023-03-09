@@ -38,15 +38,27 @@ const buscarProductos = async( termino = '', res = response) => {
 }
 
 const buscarPorCategorias = async( termino = '', res = response) => {
-     const query = { nombre : termino.toUpperCase() };
+
+    //Expresiones regulares, buscar sin impotar mayusculas y minusculas (DIFIERE DE EL)
+    const regex = new RegExp( termino, 'i');
+
+
+     const query = { nombre : regex };
 
     const categoriaEncontrada  = await Categoria.findOne(query);
+    if (categoriaEncontrada) {
+        const producto = await Producto.find({categoria: categoriaEncontrada.id});  
+        return res.json({
+            producto
+        })
+    } else {
+        return res.status(404).json({
+            msg: 'Categoria inexistente'
+        })   
+    }
 
-    const producto = await Producto.find({categoria: categoriaEncontrada.id});
 
-    return res.json({
-        producto
-    })
+
 
     /*
     //Expresiones regulares, buscar sin impotar mayusculas y minusculas (DIFIERE DE EL)

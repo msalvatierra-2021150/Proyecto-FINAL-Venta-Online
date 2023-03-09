@@ -1,15 +1,18 @@
 //Importaciones
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getUsuarios, postUsuario, putUsuario, deleteUsuario } = require('../controllers/usuario');
+const { getUsuarios, postUsuario, putUsuario, deleteUsuario } = require('../controllers/cliente');
 const { esRoleValido, emailExiste, existeUsuarioPorId } = require('../helpers/db-validators');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
-const { tieneRole } = require('../middlewares/validar-roles');
+const { tieneRole, NoEsAdminRole } = require('../middlewares/validar-roles');
 
 const router = Router();
 
-router.get('/mostrar', getUsuarios);
+router.get('/mostrar', [
+    validarJWT,
+    NoEsAdminRole
+],getUsuarios);
 
 router.post('/agregar', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
@@ -19,20 +22,16 @@ router.post('/agregar', [
     validarCampos,
 ] ,postUsuario);
 
-router.put('/editar/:id', [
-    check('id', 'No es un ID válido').isMongoId(),
-    check('id').custom( existeUsuarioPorId ),
-    check('rol').custom(  esRoleValido ),
+router.put('/editar', [
+    validarJWT,
+    NoEsAdminRole,
     validarCampos
 ] ,putUsuario);
 
 
-router.delete('/eliminar/:id', [
+router.delete('/eliminar', [
     validarJWT,
-    //esAdminRole,
-    tieneRole('ADMIN_ROLE', 'SUPERADMIN_ROLE', 'COORDINADOR_ROLE'),
-    check('id', 'No es un ID válido').isMongoId(),
-    check('id').custom( existeUsuarioPorId ),
+    NoEsAdminRole,
     validarCampos
 ] ,deleteUsuario);
 
