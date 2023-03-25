@@ -1,8 +1,6 @@
 const Role = require('../models/role');
 const Usuario = require('../models/usuario');
-const Categoria = require('../models/categoria');
-const Producto = require('../models/producto');
-const Factura = require('../models/factura');
+
 
 //Este archivo maneja validaciones personalizadas
 
@@ -41,48 +39,30 @@ const existeUsuarioPorId = async(id) => {
 
 }
 
-
-const existeCategoriaPorId = async(id) => {
-
-    //Verificar si el ID existe
-    const existeCategoria = await Categoria.findById(id);
-
-    if ( !existeCategoria ) {
-        throw new Error(`El id ${ id } no existe en la DB`);
-    }
-
-}
-
-
-const existeProductoPorId = async(id) => {
+const existeRol = async(rol) => {
 
     //Verificar si el ID existe
-    const existeProducto = await Producto.findById(id);
+    const existeRol = await Role.findOne({rol: rol});
 
-    if ( !existeProducto ) {
-        throw new Error(`El id ${ id } no existe en la DB`);
+    if ( existeRol ) {
+        throw new Error(`El rol ${ rol } ya existe en la DB`);
     }
-
 }
 
-const existeFacturaPorId = async(id) => {
-
+const existeRolPorId = async(id) => {
     //Verificar si el ID existe
-    const existeFactura = await Factura.findById(id);
+    const existeRol = await Role.findOne({id: id});
 
-    if ( !existeFactura ) {
-        throw new Error(`El id ${ id } no existe en la DB`);
+    if ( existeRol ) {
+        throw new Error(`El rol ${ id } ya existe en la DB`);
     }
-
 }
-
 
 
 module.exports = {
     esRoleValido,
     emailExiste,
     existeUsuarioPorId,
-    existeCategoriaPorId,
-    existeProductoPorId,
-    existeFacturaPorId
+    existeRol,
+    existeRolPorId
 }

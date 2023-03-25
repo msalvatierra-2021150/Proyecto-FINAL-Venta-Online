@@ -18,7 +18,7 @@ const postUsuario = async (req = request, res = response) => {
 
     //Desestructuración
     const { nombre, correo, password} = req.body;
-    rol = 'CLIENTE_ROLE';
+    rol = 'USUARIO_ROLE';
     const usuarioGuardadoDB = new Usuario({ nombre, correo, password, rol });
 
     //Encriptar password
@@ -62,7 +62,7 @@ const deleteUsuario = async(req = request, res = response) => {
     const { id } = req.usuario;
 
         //Eliminar cambiando el estado a false
-        const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
+        const usuarioEliminado = await Usuario.findByIdAndDelete(id);
 
         return res.json({
             msg: 'DELETE eliminar user',

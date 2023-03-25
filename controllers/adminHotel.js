@@ -19,7 +19,7 @@ const getAdmin = async (req = request, res = response) => {
 const postAdmin = async (req = request, res = response) => {
     //Desestructuración
     const { nombre, correo, password} = req.body;
-    const rol = req.body.rol || 'ADMIN_APP';
+    const rol = req.body.rol || 'ADMIN_HOTEL';
 
     const usuarioGuardadoDB = new Usuario({ nombre, correo, password, rol });
 
